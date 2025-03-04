@@ -1,10 +1,11 @@
 import json
 from typing import List
 
-from memory import Memory
 from openai import OpenAI
 from pydantic import BaseModel, Field
-from tool import ToolLibrary, basic_tools
+
+from linearagent.memory import Memory
+from linearagent.tool import ToolLibrary, basic_tools
 
 
 # --------------------------------
