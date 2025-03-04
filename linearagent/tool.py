@@ -51,14 +51,14 @@ class Tool:
 
         # Ensure that the input types are as expected
         type_mapping = {
-            'int': int,
-            'str': str,
-            'float': float,
-            'bool': bool,
-            'list': list,
-            'dict': dict,
-            'tuple': tuple,
-            'set': set,
+            "int": int,
+            "str": str,
+            "float": float,
+            "bool": bool,
+            "list": list,
+            "dict": dict,
+            "tuple": tuple,
+            "set": set,
         }
         for i, (input_key, input_value) in enumerate(self.tool_inputs.items()):
             if not isinstance(inputs[i], type_mapping.get(input_value["Type"])):
@@ -163,6 +163,7 @@ class ToolLibrary:
 # Basic Tools
 # --------------------------------
 
+
 class ConsoleInput(Tool):
     def __init__(self):
         super().__init__(
@@ -182,6 +183,7 @@ class ConsoleInput(Tool):
         # Capture user input in the user_response attribute
         self.user_response = builtins.input(prompt_str)
 
+
 class ConsoleOutput(Tool):
     def __init__(self):
         super().__init__(
@@ -198,5 +200,6 @@ class ConsoleOutput(Tool):
 
     def execute(self):
         print(self.output)
+
 
 basic_tools = [ConsoleInput(), ConsoleOutput()]

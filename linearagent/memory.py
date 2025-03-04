@@ -50,7 +50,7 @@ class Memory:
         Args:
             existing_thread (dict): The existing thread to map.
         """
-        self.memory['thread'] = existing_thread
+        self.memory["thread"] = existing_thread
 
     def _get_content_type(self, value):
         """
@@ -81,7 +81,7 @@ class Memory:
         # Stringify each key-value pair, for all keys that can be stringified.
         for key, value in self.memory.items():
             if include_thread is False and key == "thread":
-                continue # Skip the thread key
+                continue  # Skip the thread key
             content_type = self._get_content_type(value)
             if content_type == "text":
                 lines.append(f"Key: {key}")

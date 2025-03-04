@@ -1,9 +1,10 @@
-from pydantic import BaseModel, Field
-from openai import OpenAI
-from typing import List
-from tool import ToolLibrary, basic_tools
-from memory import Memory
 import json
+from typing import List
+
+from memory import Memory
+from openai import OpenAI
+from pydantic import BaseModel, Field
+from tool import ToolLibrary, basic_tools
 
 
 # --------------------------------
@@ -16,18 +17,20 @@ class PlanStep(BaseModel):
     tool_name: str = Field(..., description="Name of the tool to be used in this step.")
     input: list[str] = Field(
         ...,
-        description=("A list of memory keys to provide input to the tool."
-                    "These keys should be present in memory."
-                    "The tool will use the values stored under these keys as input."
-                    "The order of the keys should match the order of the tool's input parameters."
-                    "'thread' and 'all' are special keys that can send the thread or the entire memory to the tool."
+        description=(
+            "A list of memory keys to provide input to the tool."
+            "These keys should be present in memory."
+            "The tool will use the values stored under these keys as input."
+            "The order of the keys should match the order of the tool's input parameters."
+            "'thread' and 'all' are special keys that can send the thread or the entire memory to the tool."
         ),
     )
     output: list[str] = Field(
-        ..., 
-        description=("A dictionary of memory keys, along with it's description."
-                    "The tool will store the values under these keys in memory."
-                    "These keys may or may not exist in the memory, a key with the same name with replace the existing value in the memory."
+        ...,
+        description=(
+            "A dictionary of memory keys, along with it's description."
+            "The tool will store the values under these keys in memory."
+            "These keys may or may not exist in the memory, a key with the same name with replace the existing value in the memory."
         ),
     )
 
@@ -39,12 +42,13 @@ class Plan(BaseModel):
     """
 
     steps: List[PlanStep] = Field(
-        ..., 
-        description=("A list of steps (PlanStep) that comprise the plan."
-                    "Each step represents a tool execution from the tool library."
-                    "These tools are linked with each other via the memory keys."
-                    "Set appropriate memory keys in the input and output fields to link the tools."
-        )
+        ...,
+        description=(
+            "A list of steps (PlanStep) that comprise the plan."
+            "Each step represents a tool execution from the tool library."
+            "These tools are linked with each other via the memory keys."
+            "Set appropriate memory keys in the input and output fields to link the tools."
+        ),
     )
 
 
@@ -62,15 +66,15 @@ class LinearAgent:
         planner_model: str = "gpt-4o-2024-08-06",
         planner_temperature: float = 0.0,
     ):
-        self.memory = Memory()  
+        self.memory = Memory()
         self.tool_library = tool_library
-        
+
         self.planner_message = (
             "You are a planning assistant for an Agent. The user wants a plan to "
             "accomplish the given query. Produce a JSON array of steps, where each "
             "step is an object with the keys: 'tool_name', 'input' (list of memory keys), "
             "and 'output' (list of memory keys)."
-            )
+        )
         self.planner_message += "Developer Instructions: " + developer_instructions
 
         self.planner_message += self.tool_library.stringify()
@@ -79,7 +83,6 @@ class LinearAgent:
         self.client = OpenAI()
         self.planner_temperature = planner_temperature
         self.planner_model = planner_model
-
 
     def make_plan(self, thread) -> list:
         """
@@ -103,7 +106,7 @@ class LinearAgent:
         messages = [
             {"role": "system", "content": (self.planner_message)},
         ]
-        for message in self.memory.get('thread'):
+        for message in self.memory.get("thread"):
             messages.append(message)
 
         # Add memory to the last message
@@ -127,16 +130,16 @@ class LinearAgent:
         return plan
 
     def execute_plan(self, plan: list):
-        for step_num, step in enumerate(plan['steps'], start=1):
+        for step_num, step in enumerate(plan["steps"], start=1):
             tool_name = step["tool_name"]
             tool = self.tool_library.get(tool_name)
             if tool is None:
                 raise ValueError(f"Tool '{tool_name}' is not registered.")
-            
+
             # Validate the input keys
             if not set(step["input"]).issubset(self.memory.keys()):
                 raise ValueError(f"Step {step_num}: Invalid input keys.")
-            
+
             # Prepare the input and output parameters
             input = [self.memory.get(key) for key in step["input"]]
 
@@ -180,7 +183,10 @@ if __name__ == "__main__":
 
     # Define a thread with a query
     thread = [
-        {"role": "user", "content": "For 5 times, take input from user and echo it to console."},
+        {
+            "role": "user",
+            "content": "For 5 times, take input from user and echo it to console.",
+        },
     ]
 
     agent.memory.set("introduction", "This is a simple echo program.")
