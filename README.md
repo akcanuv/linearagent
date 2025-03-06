@@ -1,6 +1,6 @@
 # Linear Agent
 This is a framework for creating simple linear agents. 
-/*
+```
  LINEAR AGENT                                                                
                                                                              
  The Linear Agent is a simple framework in which each customizable tool is   
@@ -33,4 +33,4 @@ This is a framework for creating simple linear agents.
 │  'memory keys'                                    called.                │ 
 │                                                                          │ 
 └──────────────────────────────────────────────────────────────────────────┘ 
- */
+ ```
