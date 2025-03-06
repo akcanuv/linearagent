@@ -4,8 +4,8 @@ This is a framework for creating simple linear agents.
  LINEAR AGENT                                                                
                                                                              
  The Linear Agent is a simple framework in which each customizable tool is   
- called linearly, which a common context window across tool calls called     
- 'memory'                                                                    
+ called linearly, which uses a common context window across tool calls,
+ called 'memory'.
                                                                              
  The planner provides a list of tool calls to be executed using available    
  tools. The planner primes the linear agent for the sequence of task to be   
