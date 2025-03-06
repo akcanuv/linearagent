@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import List, Dict, Any, Optional
 
 from openai import OpenAI
 from pydantic import BaseModel, Field
@@ -49,6 +49,14 @@ class Plan(BaseModel):
             "Each step represents a tool execution from the tool library."
             "These tools are linked with each other via the memory keys."
             "Set appropriate memory keys in the input and output fields to link the tools."
+        ),
+    )
+    initial_memory: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description=(
+            "Optional dictionary of initial memory keys and values to set before executing the plan."
+            "These values will be populated in memory before any steps are executed."
+            "Use this to set values that are needed by the first steps in the plan."
         ),
     )
 
@@ -131,6 +139,11 @@ class LinearAgent:
         return plan
 
     def execute_plan(self, plan: list):
+        # Set initial memory values if provided
+        if plan.get("initial_memory"):
+            for key, value in plan["initial_memory"].items():
+                self.memory.set(key, value)
+                
         for step_num, step in enumerate(plan["steps"], start=1):
             tool_name = step["tool_name"]
             tool = self.tool_library.get(tool_name)
@@ -139,7 +152,8 @@ class LinearAgent:
 
             # Validate the input keys
             if not set(step["input"]).issubset(self.memory.keys()):
-                raise ValueError(f"Step {step_num}: Invalid input keys.")
+                missing_keys = set(step["input"]) - set(self.memory.keys())
+                raise ValueError(f"Step {step_num}: Missing input keys: {missing_keys}")
 
             # Prepare the input and output parameters
             input = [self.memory.get(key) for key in step["input"]]
